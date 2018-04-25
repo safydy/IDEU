@@ -1,5 +1,5 @@
 DataFilePath:
-    - adult-income.csv
+    - projects/adult-income/adult-income.csv
 Target:
     label_IsOver50K
 CategoricalColumns:

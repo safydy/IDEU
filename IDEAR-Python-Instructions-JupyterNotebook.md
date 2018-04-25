@@ -19,7 +19,7 @@ You need to complete the following steps to use IDEAR in Jupyter Notebook:
 1. Set up Jupyter Notebook server. Here are the [instructions](http://jupyter.readthedocs.io/en/latest/install.html). 
 2. Install the list of required Python modules in [readme.md](readme.md). 
 3. If you have [Data Science Virtual Machine](https://docs.microsoft.com/en-us/azure/machine-learning/machine-learning-data-science-provision-vm), Jupyter Notebook server is already set up for you. If you are using Linux DSVM on a Windows machine, you can [install X2Go on your client](https://azure.microsoft.com/en-us/documentation/articles/machine-learning-data-science-linux-dsvm-intro/#installing-and-configuring-x2go-client) to log into the Linux DSVM.
-4. If you are using _IDEAR-Python-AzureNotebooks.ipynb_ in _[**Azure Notebooks**](https://notebooks.azure.com/)_, you need to upload your data files and YAML files to the same container of your Azure blob storage using tools like [Azure Storage Explorer](http://storageexplorer.com/). If you want to try _IDEAR-Python-AzureNotebooks.ipynb_ on Azure Notebooks using the [two sample data](../../../Data/Common), you can upload the data and the corresponding YAML files _[para-adult.yaml](para-adult.yaml)_ and _[para-bike-rental-hour.yaml](para-bike-rental-hour.yaml)_ to the Azure blob storage. 
+4. If you are using _IDEAR-Python-AzureNotebooks.ipynb_ in _[**Azure Notebooks**](https://notebooks.azure.com/)_, you need to upload your data files and YAML files to the same container of your Azure blob storage using tools like [Azure Storage Explorer](http://storageexplorer.com/). If you want to try _IDEAR-Python-AzureNotebooks.ipynb_ on Azure Notebooks using the [two sample data](../../../Data/Common), you can upload the data and the corresponding YAML files _[para-adult.yaml](projects/adult-income/para-adult.yaml)_ and _[para-bike-rental-hour.yaml](para-bike-rental-hour.yaml)_ to the Azure blob storage. 
 >[AZURE.NOTE] When running on Azure Notebooks, since both YAML and the data files are in the same Azure blob storage, you need to change the value of field _**DataFilePath**_ in the YAML file to be just the data file name. 
 
 ## Conventions, limitations, and the configuration of IDEAR
@@ -88,7 +88,7 @@ During interactive data exploration, you can:
 
 To help you try IDEAR in Jupyter Notebook quickly, two sample datasets come packaged with IDEAR in the **Data\\Common** directory.  
 
-In this tutorial, we show you how to run IDEAR in Jupyter Notebook using the [UCI Census Income](https://archive.ics.uci.edu/ml/datasets/Census+Income) dataset as an example. The data is located at **Data\\Common\\UCI_Income** directory. The [para-adult.yaml](para-adult.yaml) file for this dataset is in the same directory as this instruction. 
+In this tutorial, we show you how to run IDEAR in Jupyter Notebook using the [UCI Census Income](https://archive.ics.uci.edu/ml/datasets/Census+Income) dataset as an example. The data is located at **Data\\Common\\UCI_Income** directory. The [para-adult.yaml](projects/adult-income/para-adult.yaml) file for this dataset is in the same directory as this instruction. 
 
 In the following example, **label_IsOver50**K (the income is over 50K) is specified as the target (dependent) variable in the YAML file.
 
