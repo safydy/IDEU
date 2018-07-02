@@ -61,8 +61,8 @@ class ConfUtility():
 	@staticmethod
 	def dict_to_htmllist(dc, include_list=None):
 		dc2 = {}
-		output_formatting = {'Target':'Target variable is ','CategoricalColumns':'Categorical Columns are ',
-						   'NumericalColumns':'Numerical Columns are '}
+		output_formatting = {'Target':'La cible est ','CategoricalColumns':'Les variables qualitatives sont ',
+						   'NumericalColumns':'Les variables quantitatives sont '}
 		for each in dc.keys():
 			if not include_list or each in include_list:
 				if isinstance(dc[each],  collections.Iterable) and not isinstance(dc[each], str):
