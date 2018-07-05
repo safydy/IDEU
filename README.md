@@ -1,6 +1,7 @@
 ### Product Information
 
-Exploration Interactive de Liaison de Variable  
+Exploration Interactive de Liaison de Variable  (EILV)
+Interactive Data Exploration Utilities (IDEU)
 
 ### How to Run
 
