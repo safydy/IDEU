@@ -12,10 +12,11 @@ import scipy
 
 import plotly.offline as py
 from plotly import tools as tls
+import plotly.graph_objs as go
 
 class InteractionAnalytics():
     @staticmethod
-    def rank_associations(df, conf_dict, col1, col2, col3, Export=False, CheckWithPlotly = False):
+    def rank_associations(df, conf_dict, col1, col2, col3, CheckWithPlotly = False):
         try:
             col2 = int(col2)
             col3 = int(col3)
@@ -23,7 +24,13 @@ class InteractionAnalytics():
             pass
         
         # Passed Variable is Numerical
-        fig = plt.figure()
+        if not CheckWithPlotly:
+            fig = plt.figure()
+        else:#plotly
+            fig = tls.make_subplots(rows=1, cols=2,
+                                    subplot_titles=('Top {} Associated Numeric Variables'.format(str(col2)),
+                                                    'Top {}  Associated Categoric Variables'.format(str(col2))))
+
         if (col1 in conf_dict['NumericalColumns']) :
             if len(conf_dict['NumericalColumns'])>1:
                 
@@ -37,17 +44,20 @@ class InteractionAnalytics():
                 corrdf2 = corrdf2.reset_index()
                 corrdf2.columns = ['level0','level1','rsq']
                 corrdf2.set_index('level0', inplace=True)
-                ax1 = fig.add_subplot(121)
+
+                tmp = corrdf2[['rsq']]
+                x = [i for i in tmp.index]
+                y = [j[0] for j in tmp.values]
                 if not CheckWithPlotly:
-                    corrdf2[['rsq']].plot(kind='bar', ax=ax1)
-                else:#plotly prepa
-                    tmp = corrdf2[['rsq']]
-                    x = [i for i in tmp.index]
-                    y = [j[0] for j in tmp.values]
-                    plt.bar(x, y)
-                ax1.legend().set_visible(False)
-                ax1.set_xlabel('Absolute Correlation')
-                ax1.set_title('Top {} Associated Numeric Variables'.format(str(col2)))
+                    ax1 = fig.add_subplot(121)
+                    tmp.plot(kind='bar', ax=ax1)
+                    ax1.legend().set_visible(False)
+                    ax1.set_xlabel('Absolute Correlation')
+                    ax1.set_title('Top {} Associated Numeric Variables'.format(str(col2)))
+                else:#fully use plotly standard, not matplotlib_to_plotly to avoid poor chart & config
+                    ax1 = go.Bar(x=x, y=y)
+                    fig.append_trace(ax1, 1, 1)
+
                 # Interaction with categorical variables
                 etasquared_dict = {}
             if len(conf_dict['CategoricalColumns']) >= 1:
@@ -60,17 +70,20 @@ class InteractionAnalytics():
                 topk_esq = pd.DataFrame.from_dict(etasquared_dict, orient='index').unstack().sort_values(\
                     kind = 'quicksort', ascending=False).head(col3).reset_index().set_index('level_1')
                 topk_esq.columns = ['level_0', 'EtaSquared']
-                ax2 = fig.add_subplot(121)
+
+                tmp = topk_esq[['EtaSquared']]
+                x = [i for i in tmp.index]
+                y = [j[0] for j in tmp.values]
                 if not CheckWithPlotly:
-                    topk_esq[['EtaSquared']].plot(kind='bar',ax=ax2)
-                else:#plotly prepa
-                    tmp = topk_esq[['EtaSquared']]
-                    x = [i for i in tmp.index]
-                    y = [j[0] for j in tmp.values]
-                    plt.bar(x, y)
-                ax2.legend().set_visible(False)
-                ax2.set_xlabel('Eta-squared values')
-                ax2.set_title('Top {}  Associated Categoric Variables'.format(str(col2)))
+                    ax2 = fig.add_subplot(121)
+                    tmp.plot(kind='bar',ax=ax2)
+                    ax2.legend().set_visible(False)
+                    ax2.set_xlabel('Eta-squared values')
+                    ax2.set_title('Top {}  Associated Categoric Variables'.format(str(col2)))
+                else:#fully use plotly standard, not matplotlib_to_plotly to avoid poor chart & config
+                    ax2 = go.Bar(x=x, y=y)
+                    fig.append_trace(ax2, 1, 2)
+
         # Passed Variable is Categorical
         else:
             #Interaction with numerical variables
@@ -85,17 +98,19 @@ class InteractionAnalytics():
                 topk_esq = pd.DataFrame.from_dict(etasquared_dict, orient='index').unstack().sort_values(\
                     kind = 'quicksort', ascending=False).head(col2).reset_index().set_index('level_1')
                 topk_esq.columns = ['level_0','EtaSquared']
-                ax1 = fig.add_subplot(121)
+                tmp = topk_esq[['EtaSquared']]
+                x = [i for i in tmp.index]
+                y = [j[0] for j in tmp.values]
                 if not CheckWithPlotly:
-                    topk_esq[['EtaSquared']].plot(kind='bar', ax=ax1)
+                    ax1 = fig.add_subplot(121)
+                    tmp.plot(kind='bar', ax=ax1)
+                    ax1.legend().set_visible(False)
+                    ax1.set_xlabel('Eta-squared values')
+                    ax1.set_title('Top {} Associated Numeric Variables'.format(str(col2)))
                 else:#plotly prepa
-                    tmp = topk_esq[['EtaSquared']]
-                    x = [i for i in tmp.index]
-                    y = [j[0] for j in tmp.values]
-                    plt.bar(x, y)
-                ax1.legend().set_visible(False)
-                ax1.set_xlabel('Eta-squared values')
-                ax1.set_title('Top {} Associated Numeric Variables'.format(str(col2)))
+                    ax1 = go.Bar(x=x, y=y)
+                    fig.append_trace(ax1, 1, 1)
+
 
             # Interaction with categorical variables
             cramer_dict = {}
@@ -114,22 +129,23 @@ class InteractionAnalytics():
                 topk_cramer = pd.DataFrame.from_dict(cramer_dict, orient='index').unstack().sort_values(\
                     kind = 'quicksort', ascending=False).head(col3).reset_index().set_index('level_1')
                 topk_cramer.columns = ['level_0','CramersV']
-                ax2 = fig.add_subplot(122)
-                if not CheckWithPlotly:
-                    topk_cramer[['CramersV']].plot(kind='bar', ax=ax2)
-                else:#plotly prepa
-                    tmp = topk_cramer[['CramersV']]
-                    x = [i for i in tmp.index]
-                    y = [j[0] for j in tmp.values]
-                    plt.bar(x, y)
-                ax2.legend().set_visible(False)
-                ax2.set_xlabel("Cramer's V")
-                ax2.set_title('Top {} Associated Categoric Variables'.format(str(col2)))
 
-        if CheckWithPlotly: # transform to plotly viz
-            plotly_fig = tls.mpl_to_plotly(fig)
-            f2 = py.iplot(plotly_fig)
-            return f2
+                tmp = topk_cramer[['CramersV']]
+                x = [i for i in tmp.index]
+                y = [j[0] for j in tmp.values]
+                if not CheckWithPlotly:
+                    ax2 = fig.add_subplot(122)
+                    tmp.plot(kind='bar', ax=ax2)
+                    ax2.legend().set_visible(False)
+                    ax2.set_xlabel("Cramer's V")
+                    ax2.set_title('Top {} Associated Categoric Variables'.format(str(col2)))
+                else:#plotly prepa
+                    ax2 = go.Bar(x=x, y=y)
+                    fig.append_trace(ax2, 1, 2)
+
+        if CheckWithPlotly:
+            py.iplot(fig)
+        return fig
 
     @staticmethod
     def NoLabels(x):
