@@ -29,8 +29,8 @@
 # c.LocalGitHubOAuthenticator.client_secret = 'c156cbf32b7fe0b398894f4b83fa93545f2a1d70'
 #
 # # c.LocalGitHubOAuthenticator.create_system_users = True
-# #c.Authenticator.whitelist = {'peter','kendra'}
-# c.Authenticator.admin_users = {'peter'}
+c.Authenticator.whitelist = {'rs','zo'}
+c.Authenticator.admin_users = {'rs'}
 #################End github config
 
 #------------------------------------------------------------------------------
@@ -395,6 +395,9 @@
 #  
 #  Should be a subclass of Spawner.
 #c.JupyterHub.spawner_class = 'jupyterhub.spawner.LocalProcessSpawner'
+c.JupyterHub.spawner_class = 'sudospawner.SudoSpawner'
+c.JupyterHub.hub_port = 8880
+c.JupyterHub.port = 80
 
 ## Path to SSL certificate file for the public facing interface of the proxy
 #  
