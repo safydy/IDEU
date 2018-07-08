@@ -417,19 +417,32 @@ class InteractionAnalytics():
         ax.legend(title=col1, fontsize=10)
         
     @staticmethod
-    def nnc_relation(df, conf_dict, col1, col2, col3, Export=False):
+    def nnc_relation(df, conf_dict, col1, col2, col3, CheckWithPlotly = False):
         import itertools
         markers = ['x', 'o', '^']
         color = itertools.cycle(['r', 'y', 'c', 'y', 'k']) 
         groups = df[[col1, col2, col3]].groupby(col3)
+        if not CheckWithPlotly:
+            # Plot
+            fig, ax = plt.subplots()
+            ax.margins(0.05)
 
-        # Plot
-        fig, ax = plt.subplots()
-        ax.margins(0.05) 
-
-        #print groups
-        for (name, group), marker in zip(groups, itertools.cycle(markers)):
-            ax.plot(group[col1], group[col2], marker='o', linestyle='', ms=4, label=name)
-        ax.set_xlabel(col1)
-        ax.set_ylabel(col2)
-        ax.legend(numpoints=1, loc='best', title=col3)
+            #print groups
+            for (name, group), marker in zip(groups, itertools.cycle(markers)):
+                ax.plot(group[col1], group[col2], marker='o', linestyle='', ms=4, label=name)
+            ax.set_xlabel(col1)
+            ax.set_ylabel(col2)
+            ax.legend(numpoints=1, loc='best', title=col3)
+        else:
+            # print(y)
+            traces = []
+            for item in groups:
+                x = item[1][col1].values
+                y = item[1][col2].values
+                t = go.Scatter(x=x, y=y, mode = 'markers', name=item[0])
+                traces.append(t)
+            layout = go.Layout(title='',)
+            fig = go.Figure(data=traces, layout=layout)
+            fig['layout']['xaxis'].update(title=col1)
+            fig['layout']['yaxis'].update(title=col2)
+            py.iplot(fig)
