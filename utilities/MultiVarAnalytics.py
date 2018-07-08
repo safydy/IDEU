@@ -12,7 +12,7 @@ import scipy
 
 class InteractionAnalytics():
     @staticmethod
-    def rank_associations(df, conf_dict, col1, col2, col3, Export):        
+    def rank_associations(df, conf_dict, col1, col2, col3, Export=False):
         try:
             col2 = int(col2)
             col3 = int(col3)
