@@ -78,26 +78,35 @@ class CategoricAnalytics():
         tmp = df[col1].value_counts().nlargest(10)
         x = tmp.index
         y = tmp.values
-        fig = plt.figure()
 
-        ax0 = fig.add_subplot(121)
         if not CheckWithPlotly:
+            fig = plt.figure()
+            ax0 = fig.add_subplot(121)
             tmp.plot(ax=ax0, kind='bar')
-        else:
-            plt.bar(x, y)
-        ax0.set_xlabel(col1)
-        ax0.set_title('Bar chart of {}'.format(col1))
-
-        ax1 = fig.add_subplot(122)
-        if not CheckWithPlotly:
+            ax0.set_xlabel(col1)
+            ax0.set_title('Bar chart of {}'.format(col1))
+            ax1 = fig.add_subplot(122)
             tmp.plot(ax=ax1, kind='pie')
-        else:
-            plt.pie(y, labels=x)
-        ax1.set_title('Pie chart of {}'.format(col1))
+            ax1.set_title('Pie chart of {}'.format(col1))
+            return fig
+        else:#fully use plotly standard, not matplotlib_to_plotly to avoid poor chart & config
+            # TODO: Fix subplot for bar & pie together
+            # fig = tls.make_subplots(rows=1, cols=2,subplot_titles=('Bar Plot of {}'.format(col1),'Pie Chart of {}'.format(col1)))
+            ax0 = go.Bar(x=x, y=y)
+            ax1 = go.Pie(labels=list(x), values=y)
 
-        if CheckWithPlotly:  # transform to plotly viz
-            # transform to plotly viz
-            plotly_fig = tls.mpl_to_plotly(fig)
-            f2 = py.iplot(plotly_fig)
-            return f2
+            layout1 = go.Layout(title='Bar Plot of {}'.format(col1))  # height=400, width=400, autosize=False,
+            fig1 = go.Figure(data=[ax0], layout=layout1)
+            py.iplot(fig1)
+
+            layout2 = go.Layout(title='Pie Plot of {}'.format(col1))
+            fig2 = go.Figure(data=[ax1], layout=layout2)
+            py.iplot(fig2)
+            # fig.append_trace(ax0, 1, 1)
+            # fig.append_trace(ax1, 1, 2)
+            # fig['layout'].update(height=600, width=800)
+            # py.iplot(fig, filename=filename)
+            return [fig1, fig2]
+
+
 
