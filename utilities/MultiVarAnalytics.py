@@ -293,11 +293,9 @@ class InteractionAnalytics():
         ax2.legend(title=col1, fontsize=14)
                 
     @staticmethod
-    def nc_relation(df, conf_dict, col1, col2, col3=None, Export=False):
-        fig,ax = plt.subplots()
-        f = df[[col1,col2]].boxplot(by=col2, ax=ax)
-
-        mod = ols('{} ~ {}'.format(col1, col2), data=df[[col1, col2]]).fit()
+    def nc_relation(df, conf_dict, col1, col2, col3=None, CheckWithPlotly = False):
+        tmp = df[[col1,col2]]
+        mod = ols('{} ~ {}'.format(col1, col2), data=tmp).fit()
         aov_table = sm.stats.anova_lm(mod, typ=1)
         p_val = round(aov_table['PR(>F)'][0], 6)
         status = 'Passed'
@@ -305,9 +303,26 @@ class InteractionAnalytics():
         if p_val < 0.05:
             status = 'Rejected'
             color = 'red'
-    #     ax.set_ylabel(col1)
-        fig.suptitle('ho {} (p_value = {})'.format( status, p_val), color=color, fontsize=10)
-        #return p_val, status, color
+
+        if not CheckWithPlotly:
+            fig,ax = plt.subplots()
+            f = tmp.boxplot(by=col2, ax=ax)
+
+            #     ax.set_ylabel(col1)
+            fig.suptitle('Ho {} (p_value = {})'.format( status, p_val), color=color, fontsize=10)
+            #return p_val, status, color
+        else:
+            grouped = list(tmp.groupby(col2))
+            # print(y)
+            boxes = []
+            for item in grouped:
+                d = item[1][col1].values
+                t = go.Box(y=d, name=item[0])
+                boxes.append(t)
+            layout = go.Layout(title='Ho {} (p_value = {})'.format( status, p_val),
+                               font=dict(size=12, color=color))
+            fig = go.Figure(data=boxes, layout=layout)
+            py.iplot(fig)
     
     @staticmethod
     def pca_3d(df, conf_dict, col1, col2,  col3=None, Export=False):
