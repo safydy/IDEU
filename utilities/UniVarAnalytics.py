@@ -55,7 +55,11 @@ class NumericAnalytics():
         return status, color, p_val
 
     @staticmethod
-    def custom_barplot(df, col1=''):
+    def custom_barplot(df, col1='', CheckWithPlotly=False):
+        if CheckWithPlotly:
+            print("KDE and PROBPLOT plots not available on plotly")
+            return ""
+
         fig, axes = plt.subplots(2,2)
         axes = axes.reshape(-1)
     #     print df[col].describe()
