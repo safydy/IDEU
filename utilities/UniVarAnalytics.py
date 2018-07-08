@@ -55,7 +55,7 @@ class NumericAnalytics():
         return status, color, p_val
 
     @staticmethod
-    def custom_barplot(df, filename='', col1='', Export=False):
+    def custom_barplot(df, col1=''):
         fig, axes = plt.subplots(2,2)
         axes = axes.reshape(-1)
     #     print df[col].describe()
@@ -74,7 +74,7 @@ class NumericAnalytics():
 
 class CategoricAnalytics():
     @staticmethod
-    def custom_barplot(df, filename='', col1='', Export=False, CheckWithPlotly = False):
+    def custom_barplot(df, col1='', CheckWithPlotly = False):
         tmp = df[col1].value_counts().nlargest(10)
         x = tmp.index
         y = tmp.values
