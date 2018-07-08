@@ -236,8 +236,7 @@ class InteractionAnalytics():
             py.iplot(fig)
 
     @staticmethod
-    def numerical_pca(df, conf_dict, col1, col2, col3, Export=False):
-
+    def numerical_pca(df, conf_dict, col1, col2, col3, CheckWithPlotly = False):
         from sklearn.decomposition import PCA
         from sklearn.preprocessing import StandardScaler
         num_numeric = len(conf_dict['NumericalColumns'])
@@ -250,11 +249,26 @@ class InteractionAnalytics():
         X = StandardScaler().fit_transform(df2.values)
         pca = PCA(n_components=num_pca)
         pca.fit(X)
-        fig, (ax1,ax2) = plt.subplots(1, 2)
+
     #     print pca.explained_variance_ratio_
-        ax1.bar(np.arange(1,(num_numeric+1),1),pca.explained_variance_ratio_ )
-        ax1.set_ylabel('% Variance Explained')
-        ax1.set_xticklabels(xticklabels)
+
+        if not CheckWithPlotly:
+            fig = plt.figure()
+        else:#plotly
+            fig = tls.make_subplots(rows=1, cols=2, subplot_titles=('Top {} Associated Numeric Variables'.format(str(col2)),
+                                                    'Top {}  Associated Categoric Variables'.format(str(col2))))
+
+        x = np.arange(1,(num_numeric+1),1)
+        y = pca.explained_variance_ratio_
+        if not CheckWithPlotly:
+            ax1 = fig.add_subplot(121)
+            plt.bar(x, y)
+            ax1.set_ylabel('% Variance Explained')
+            ax1.set_xticklabels(xticklabels)
+        else:
+            ax1 = go.Bar(x=x, y=y, name="Comp.")
+            fig.append_trace(ax1, 1, 1)
+            fig['layout']['xaxis1'].update(title='% Variance Explained', ticktext=xticklabels, tickvals=list(x))
 
         x_pca_index = int(col2) - 1
         y_pca_index = int(col3) - 1
@@ -280,17 +294,35 @@ class InteractionAnalytics():
         merged_df = pd.merge(colordf,Y_pca)
     #     print merged_df.head()
         grouped_df = merged_df.groupby(col1)
+        if CheckWithPlotly:
+            traces = []
         for name, group in grouped_df:
-            ax2.scatter(
-               group[Y_pca.columns[x_pca_index]], group[Y_pca.columns[y_pca_index]],label=name,  # data
-               c=group['color'],                            # marker colour
-    #             color='y',
-               marker='o',                                # marker shape
-               s=6                                       # marker size
-               )
-        ax2.set_xlabel(Y_pca.columns[x_pca_index])
-        ax2.set_ylabel(Y_pca.columns[y_pca_index])
-        ax2.legend(title=col1, fontsize=14)
+            x2 = group[Y_pca.columns[x_pca_index]]
+            y2 = group[Y_pca.columns[y_pca_index]]
+
+            if not CheckWithPlotly:
+                ax2 = fig.add_subplot(122)
+                plt.scatter(x2, y2,label=name,  # data
+                   c=group['color'],                            # marker colour
+        #             color='y',
+                   marker='o',                                # marker shape
+                   s=6                                       # marker size
+                   )
+            else:
+                t = go.Scatter(x=x2,y=y2,mode='markers',name=name)
+                fig.append_trace(t, 1, 2)
+                #traces.append(t)
+
+        if not CheckWithPlotly:
+            ax2.set_xlabel(Y_pca.columns[x_pca_index])
+            ax2.set_ylabel(Y_pca.columns[y_pca_index])
+            ax2.legend(title=col1, fontsize=14)
+        else:
+            layout = go.Layout(title=col1)
+            # fig.append_trace(traces, 1, 2)
+            fig['layout']['xaxis2'].update(title=Y_pca.columns[x_pca_index])
+            fig['layout']['yaxis2'].update(title=Y_pca.columns[y_pca_index])
+            py.iplot(fig)
                 
     @staticmethod
     def nc_relation(df, conf_dict, col1, col2, col3=None, CheckWithPlotly = False):
