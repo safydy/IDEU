@@ -57,6 +57,7 @@ class InteractionAnalytics():
                 else:#fully use plotly standard, not matplotlib_to_plotly to avoid poor chart & config
                     ax1 = go.Bar(x=x, y=y)
                     fig.append_trace(ax1, 1, 1)
+                    fig['layout']['xaxis1'].update(title='Absolute Correlation')
 
                 # Interaction with categorical variables
                 etasquared_dict = {}
@@ -83,6 +84,7 @@ class InteractionAnalytics():
                 else:#fully use plotly standard, not matplotlib_to_plotly to avoid poor chart & config
                     ax2 = go.Bar(x=x, y=y)
                     fig.append_trace(ax2, 1, 2)
+                    fig['layout']['xaxis2'].update(title='Eta-squared values')
 
         # Passed Variable is Categorical
         else:
@@ -110,6 +112,7 @@ class InteractionAnalytics():
                 else:#plotly prepa
                     ax1 = go.Bar(x=x, y=y)
                     fig.append_trace(ax1, 1, 1)
+                    fig['layout']['xaxis1'].update(title='Eta-squared values')
 
 
             # Interaction with categorical variables
@@ -142,6 +145,7 @@ class InteractionAnalytics():
                 else:#plotly prepa
                     ax2 = go.Bar(x=x, y=y)
                     fig.append_trace(ax2, 1, 2)
+                    fig['layout']['xaxis2'].update(title="Cramer's V")
 
         if CheckWithPlotly:
             py.iplot(fig)
@@ -194,7 +198,7 @@ class InteractionAnalytics():
             ax.set_xlabel(col2)
             ax.set_ylabel(col1)
             ax.set_title('{} vs {}, Correlation {}'.format(col1, col2, corr))
-            return f
+            # return f
         else:
             # lowess
             t1 = go.Scatter(x=x,y=y,mode='markers', name='scatter(x,y)')
@@ -207,21 +211,29 @@ class InteractionAnalytics():
                                yaxis=dict(title=col1))
             fig = go.Figure(data=[t1, t2, t3], layout=layout)
             py.iplot(fig)
-            return fig
+            # return fig
 
     @staticmethod
-    def numerical_correlation(df, conf_dict, col1, Export=False):
+    def numerical_correlation(df, conf_dict, col1, CheckWithPlotly = False):
         from matplotlib.pyplot import quiver, colorbar, clim,  matshow
         df2 = df[conf_dict['NumericalColumns']].corr(method=col1)
         col_names = list(df[conf_dict['NumericalColumns']].columns)
     #     print col_names
-        fig,ax = plt.subplots(1, 1)
-        m = ax.matshow(df2, cmap=matplotlib.pyplot.cm.coolwarm)
-        ax.grid(b=False)
-        fig.colorbar(m)
-        ax.set_xticklabels([' '] + col_names) #xticks extend the displayable area. Catering for this by adding a dummy value
-        ax.set_yticklabels([' '] + col_names)
-        #return df2
+        if not CheckWithPlotly:
+            fig,ax = plt.subplots(1, 1)
+            m = ax.matshow(df2, cmap=matplotlib.pyplot.cm.coolwarm)
+            ax.grid(b=False)
+            fig.colorbar(m)
+            ax.set_xticklabels([' '] + col_names) #xticks extend the displayable area. Catering for this by adding a dummy value
+            ax.set_yticklabels([' '] + col_names)
+            #return df2
+        else:
+            t = go.Heatmap(z=df2.values,
+                   x=col_names,
+                   y=col_names)
+            layout = go.Layout(title='Correlation of numerical variables')
+            fig = go.Figure(data=[t], layout=layout)
+            py.iplot(fig)
 
     @staticmethod
     def numerical_pca(df, conf_dict, col1, col2, col3, Export=False):
