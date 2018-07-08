@@ -357,7 +357,7 @@ class InteractionAnalytics():
             py.iplot(fig)
     
     @staticmethod
-    def pca_3d(df, conf_dict, col1, col2,  col3=None, Export=False):
+    def pca_3d(df, conf_dict, col1, col2,  col3=None, CheckWithPlotly = False):
         from sklearn.decomposition import PCA
         from sklearn.preprocessing import StandardScaler
 
@@ -366,13 +366,10 @@ class InteractionAnalytics():
         X = StandardScaler().fit_transform(df2.values)
         pca = PCA(n_components=4)
         pca.fit(X)
-        fig = plt.figure()
-        ax = fig.gca(projection='3d')
-        ax.view_init(elev=10, azim=int(col2))              # elevation and angle
-    #     ax.dist=10  
         Y_pca = pd.DataFrame(pca.fit_transform(X))
         Y_pca.columns = ['PC1','PC2','PC3','PC4']
         Y_pca[col1] = df[col1]
+
         colors_dict = {}
         colors_list = ['r', 'y', 'c', 'y', 'k']
         j = 0
@@ -383,22 +380,55 @@ class InteractionAnalytics():
                 j = 0
 
         colordf = pd.DataFrame.from_dict(colors_dict, orient='index').reset_index()
-        colordf.columns = [col1,'color']
-        merged_df = pd.merge(colordf,Y_pca)
+        colordf.columns = [col1, 'color']
+        merged_df = pd.merge(colordf, Y_pca)
+
+        if not CheckWithPlotly:
+            fig = plt.figure()
+            ax = fig.gca(projection='3d')
+            ax.view_init(elev=10, azim=int(col2))              # elevation and angle
+            #     ax.dist=10
+        else:#plotly
+            traces = []
+
     #     print merged_df.head()
         grouped_df = merged_df.groupby(col1)
         for name, group in grouped_df:
-            ax.scatter(
-               group['PC1'], group['PC2'], group['PC3'], label=name,  # data
-               c = group['color'],                            # marker colour
-    #             color='y',
-               marker = 'o',                                # marker shape
-               s=6                                       # marker size
-               )
-        ax.set_xlabel('PC1', labelpad=18)
-        ax.set_ylabel('PC2', labelpad=18)
-        ax.set_zlabel('PC3', labelpad=18)
-        ax.legend(title=col1, fontsize=10)
+            x = group['PC1']
+            y = group['PC2']
+            z = group['PC3']
+            if not CheckWithPlotly:
+                ax.scatter(x, y, z, label=name,  # data
+                   c = group['color'],                            # marker colour
+        #             color='y',
+                   marker = 'o',                                # marker shape
+                   s=6                                       # marker size
+                   )
+            else:
+                t = go.Scatter3d(x=x, y=y, z=z, mode='markers', name=name)
+                traces.append(t)
+
+        if not CheckWithPlotly:
+            ax.set_xlabel('PC1', labelpad=18)
+            ax.set_ylabel('PC2', labelpad=18)
+            ax.set_zlabel('PC3', labelpad=18)
+            ax.legend(title=col1, fontsize=10)
+        else:
+            layout = go.Layout(
+                scene=dict(
+                    xaxis=dict(
+                        title='PC1'),
+                    yaxis=dict(
+                        title='PC2'),
+                    zaxis=dict(
+                        title='PC3'), ),
+                margin=dict(
+                    r=20, b=10,
+                    l=10, t=10)
+            )
+            fig = go.Figure(data=traces, layout=layout)
+            py.iplot(fig)
+
 
     @staticmethod
     def pca_3d_new(df, conf_dict, col1, col2, col3, col4, col5, Export=False):
