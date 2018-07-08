@@ -9,7 +9,7 @@ py.init_notebook_mode(connected=True) #initiate the Plotly Notebook mode
 class TargetAnalytics():
     ReportedVariables = []
     @staticmethod
-    def custom_barplot(df,filename='',col1='', Export=False, CheckWithPlotly = False):
+    def custom_barplot(df, col1='', CheckWithPlotly = False):
             tmp = df[col1].value_counts()
             x = tmp.index
             y = tmp.values
