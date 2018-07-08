@@ -171,28 +171,44 @@ class InteractionAnalytics():
         ax.set_title('{} vs {}'.format(col1, col2) )
     
     @staticmethod
-    def numerical_relations(df, col1, col2, Export=False):
+    def numerical_relations(df, col1, col2, CheckWithPlotly = False):
         from statsmodels.nonparametric.smoothers_lowess import lowess
         x = df[col2]
         y = df[col1]
-        f, ax = plt.subplots(1)
-
-        # lowess
-        ax.scatter(x, y, c='g', s=6)
-        lowess_results = lowess(y, x)#[:,1]
+        lowess_results = lowess(y, x)  # [:,1]
         xs = lowess_results[:, 0]
         ys = lowess_results[:, 1]
-        ax.plot(xs,ys,'red',linewidth=1)
 
-        #ols
         fit = np.polyfit(x, y, 1)
         fit1d = np.poly1d(fit)
-        ax.plot(x, fit1d(x), '--b')
-        ax.set_xlabel(col2)
-        ax.set_ylabel(col1)
         corr = round(scipy.stats.pearsonr(x, y)[0], 6)
-        ax.set_title('{} vs {}, Correlation {}'.format(col1, col2, corr))
-    
+        if not CheckWithPlotly:
+            f, ax = plt.subplots(1)
+
+            # lowess
+            ax.scatter(x, y, c='g', s=6)
+            ax.plot(xs,ys,'red',linewidth=1)
+
+            #ols
+            ax.plot(x, fit1d(x), '--b')
+            ax.set_xlabel(col2)
+            ax.set_ylabel(col1)
+            ax.set_title('{} vs {}, Correlation {}'.format(col1, col2, corr))
+            return f
+        else:
+            # lowess
+            t1 = go.Scatter(x=x,y=y,mode='markers', name='scatter(x,y)')
+            t2 = go.Scatter(x=xs, y=ys, mode = 'lines', name='LOWESS(x,y)')#, line = dict(color = ('rgb(205, 12, 24)'))
+
+            # ols
+            t3 = go.Scatter(x=x, y=fit1d(x), mode='lines', line=dict(dash = 'dash'), name="poly1d[polyfit(x, y, 1)]")#color=('rgb(22, 96, 167)'),
+            layout = go.Layout(title='{} vs {}, Correlation {}'.format(col1, col2, corr),
+                               xaxis=dict(title=col2),
+                               yaxis=dict(title=col1))
+            fig = go.Figure(data=[t1, t2, t3], layout=layout)
+            py.iplot(fig)
+            return fig
+
     @staticmethod
     def numerical_correlation(df, conf_dict, col1, Export=False):
         from matplotlib.pyplot import quiver, colorbar, clim,  matshow
