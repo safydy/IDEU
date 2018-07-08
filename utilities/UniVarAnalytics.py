@@ -10,28 +10,29 @@ class TargetAnalytics():
     ReportedVariables = []
     @staticmethod
     def custom_barplot(df,filename='',col1='', Export=False, CheckWithPlotly = False):
-        if not CheckWithPlotly:
-            f, (ax0,ax1) = plt.subplots(1, 2)
-            df[col1].value_counts().plot(ax=ax0, kind='bar')
-            ax0.set_title('Bar Plot of {}'.format(col1))
-            df[col1].value_counts().plot(ax=ax1, kind='pie')
-            ax1.set_title('Pie Chart of {}'.format(col1))
-        else: # Plotly code equivalent Transcode
             tmp = df[col1].value_counts()
             x = tmp.index
             y = tmp.values
             fig = plt.figure()
-            ax0 = fig.add_subplot(121)
-            ax0.title.set_text('Bar Plot of {}'.format(col1))
-            plt.bar(x, y)
-            ax1 = fig.add_subplot(122)
-            ax1.title.set_text('Pie Chart of {}'.format(col1))
-            plt.pie(y, labels = x)
-            # transform to plotly viz
-            plotly_fig = tls.mpl_to_plotly(fig)
-            f2 = py.iplot(plotly_fig)
-            return f2
 
+            ax0 = fig.add_subplot(121)
+            if not CheckWithPlotly:
+                tmp.plot(ax=ax0, kind='bar')
+            else:
+                plt.bar(x, y)
+            ax0.set_title('Bar Plot of {}'.format(col1))
+
+            ax1 = fig.add_subplot(122)
+            if not CheckWithPlotly:
+                tmp.plot(ax=ax1, kind='pie')
+            else:
+                plt.pie(y, labels=x)
+            ax1.set_title('Pie Chart of {}'.format(col1))
+
+            if CheckWithPlotly:# transform to plotly viz
+                plotly_fig = tls.mpl_to_plotly(fig)
+                f2 = py.iplot(plotly_fig)
+                return f2
 
 class NumericAnalytics():
     @staticmethod
@@ -65,26 +66,29 @@ class NumericAnalytics():
 class CategoricAnalytics():
     @staticmethod
     def custom_barplot(df, filename='', col1='', Export=False, CheckWithPlotly = False):
+        tmp = df[col1].value_counts().nlargest(10)
+        x = tmp.index
+        y = tmp.values
+        fig = plt.figure()
+
+        ax0 = fig.add_subplot(121)
         if not CheckWithPlotly:
-            f, (ax0,ax1) = plt.subplots(1,2)
-            df[col1].value_counts().nlargest(10).plot(ax=ax0, kind='bar')
-            ax0.set_xlabel(col1)
-            ax0.set_title('Bar chart of {}'.format(col1))
-            df[col1].value_counts().nlargest(10).plot(ax=ax1, kind='pie')
-            ax1.set_title('Pie chart of {}'.format(col1))
-            # return f
+            tmp.plot(ax=ax0, kind='bar')
         else:
-            tmp = df[col1].value_counts().nlargest(10)
-            x = tmp.index
-            y = tmp.values
-            fig = plt.figure()
-            ax0 = fig.add_subplot(121)
-            ax0.title.set_text('Bar chart of {}'.format(col1))
             plt.bar(x, y)
-            ax1 = fig.add_subplot(122)
-            ax1.title.set_text('Pie chart of {}'.format(col1))
-            plt.pie(y, labels = x)
+        ax0.set_xlabel(col1)
+        ax0.set_title('Bar chart of {}'.format(col1))
+
+        ax1 = fig.add_subplot(122)
+        if not CheckWithPlotly:
+            tmp.plot(ax=ax1, kind='pie')
+        else:
+            plt.pie(y, labels=x)
+        ax1.set_title('Pie chart of {}'.format(col1))
+
+        if CheckWithPlotly:  # transform to plotly viz
             # transform to plotly viz
             plotly_fig = tls.mpl_to_plotly(fig)
             f2 = py.iplot(plotly_fig)
             return f2
+
