@@ -1,0 +1,52 @@
+DataFilePath:
+    - L2M-alimentation-et-nutrition.csv
+Target:
+    B4_manque_alim_4m
+CategoricalColumns:
+    - B1_crainte_sous_alim_7j
+    - QB5_Avril_manque
+    - QB5_Mai_manque
+    - QB5_Juin_manque
+    - QB5_Juillet_manque
+    - B6_9_nom_autres_causes
+    - B6_cause
+    - QB7_1_reduire_repas
+    - QB7_2_limiter_portions
+    - QB7_3_alim_moins_apprecies
+    - QB7_4_changer_prep
+    - QB7_5_emprunt_argent
+    - QB7_6_reporter_articles
+    - QB7_7_reporter_education
+    - QB7_8_vendre_propriete
+    - B8_mange_moins
+    - REGION
+    - grappe
+    - MILIEU
+    - categorie_consommation
+    - taille_famille_gp
+    - genre_chef_f
+    - age_groupe
+    - niveau_instruction_chef_f
+    - B4_manque_alim_4m
+NumericalColumns:
+    - A1_A_cereales
+    - A1_B_racines
+    - A1_C_noix
+    - A1_D_legumes
+    - A1_E_viandes
+    - A1_F_fruits
+    - A1_G_par_vendeurs
+    - A1_H_laitiers
+    - A1_I_graisses
+    - A1_J_sucres
+    - A1_K_epices
+    - A1_L_boissons
+    - B2_a_moins_apprecies
+    - B2_b_portions_limites
+    - B2_c_reduire_nbr_repas
+    - B2_d_restreindre_adultes
+    - B2_e_emprunts
+    - B3_a_repas_adultes
+    - B3_b_repas_enfants
+    - taille_famille
+    - age_chef_f
