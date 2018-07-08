@@ -20,9 +20,9 @@ class TargetAnalytics():
 		# f2 = py.iplot(plotly_fig)
 		# return f2
 
-
-		x = df[col1].unique()
-		y = df[col1].value_counts()
+		tmp = df[col1].value_counts()
+		x = tmp.index
+		y = tmp.values
 		fig = plt.figure()
 		ax0 = fig.add_subplot(121)
 		ax0 = plt.bar(x, y)
@@ -53,17 +53,16 @@ class NumericAnalytics():
 	#     print df[col].describe()
 		df[col1].plot(ax=axes[0], kind='hist')
 		axes[0].set_title('Histogram of {}'.format(col1))
-		df[col1].plot(ax=axes[1], kind='kde')
+		df[col1].plot(ax=axes[1], kind='kde') # Not plt equivalent found
 		axes[1].set_title('Density Plot of {}'.format(col1))
 		ax3 = plt.subplot(223)
-		stats.probplot(df[col1], plot=plt)
+		stats.probplot(df[col1], plot=plt) # Not plt equivalent found
 		axes[2].set_title('QQ Plot of {}'.format(col1))
 		df[col1].plot(ax=axes[3], kind='box')
 		axes[3].set_title('Box Plot of {}'.format(col1))
 		status, color, p_val = NumericAnalytics.shapiro_test(df[col1])
 		fig.suptitle('Normality test for {} {} (p_value = {})'.format(col1, status, round(p_val, 6)), color=color, fontsize=12)
-
-	#     return f
+	    # return f
 	
 class CategoricAnalytics():
 	@staticmethod
